@@ -4,6 +4,7 @@ public abstract class Composants {
 	protected String nom;
 	protected String typeComposant;
 	protected Double TauxTVA;
+    protected Project projectAssocie;
     public Composants(String nom, String typeComposant, Double TauxTVA) {
         this.nom = nom;
         this.typeComposant = typeComposant;

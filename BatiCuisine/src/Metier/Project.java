@@ -1,78 +1,73 @@
 package Metier;
 
-import java.util.List;
+import Util.enums.EtatProjet;
 
 public class Project {
-	
-	private String nom;
-	private Double margeBeneficiaire;
-	private Double coutTotal;
-	private EtatProjet etatProjet;
-    private Client clientAssocie;  
-    private List<Composants> composants; 
-    private Devis devis;
-    
-  
-   
-    public enum EtatProjet {
-        EN_COURS, TERMINE, ANNULE 
-    }
+    private int id;
+    private String nomProjet;
+    private double margeBeneficiaire;
+    private double coutTotal;
+    private EtatProjet etatProjet;
+    private int clientId;
 
+    // Constructors, getters, and setters
+    public Project() {}
 
-    //getter
-    public String getNom() {
-        return nom;
-    }
-    public Double getMargeBeneficiaire() {
-        return margeBeneficiaire;
-    }
-    public Double getCoutTotal() {
-        return coutTotal;
-    }
-    public EtatProjet getEtatProjet() {
-        return etatProjet;
-    }
-    public Client getClientAssocie() {
-        return clientAssocie;
-    }
-    public List<Composants> getComposants() {
-        return composants;
-    }
-    public Devis getDevis() {
-        return devis;
-    }
-
-
-
-
-
-
-    // setter
-    public void setNom(String nom) {
-        this.nom = nom;
-    }                       
-    public void setMargeBeneficiaire(Double margeBeneficiaire) {
+    public Project(String nomProjet, double margeBeneficiaire, double coutTotal, EtatProjet etatProjet, int clientId) {
+        this.nomProjet = nomProjet;
         this.margeBeneficiaire = margeBeneficiaire;
-    }
-    public void setCoutTotal(Double coutTotal) {
         this.coutTotal = coutTotal;
-    }
-    public void setEtatProjet(EtatProjet etatProjet) {
         this.etatProjet = etatProjet;
+        this.clientId = clientId;
     }
-    public void setClientAssocie(Client clientAssocie) {
-        this.clientAssocie = clientAssocie;
-    }
-    public void setComposants(List<Composants> composants) {
-        this.composants = composants;
-    }
-    public void setDevis(Devis devis) {
-        this.devis = devis;
-    }
-    
-    
-    
-    
-	
 
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getNomProjet() {
+		return nomProjet;
+	}
+
+	public void setNomProjet(String nomProjet) {
+		this.nomProjet = nomProjet;
+	}
+
+	public double getMargeBeneficiaire() {
+		return margeBeneficiaire;
+	}
+
+	public void setMargeBeneficiaire(double margeBeneficiaire) {
+		this.margeBeneficiaire = margeBeneficiaire;
+	}
+
+	public double getCoutTotal() {
+		return coutTotal;
+	}
+
+	public void setCoutTotal(double coutTotal) {
+		this.coutTotal = coutTotal;
+	}
+
+	public EtatProjet getEtatProjet() {
+		return etatProjet;
+	}
+
+	public void setEtatProjet(EtatProjet etatProjet) {
+		this.etatProjet = etatProjet;
+	}
+
+	public int getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(int clientId) {
+		this.clientId = clientId;
+	}
+
+    
 }
