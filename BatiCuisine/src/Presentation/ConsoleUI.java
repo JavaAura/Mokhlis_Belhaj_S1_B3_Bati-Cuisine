@@ -1,5 +1,8 @@
 package Presentation;
 
+import java.lang.reflect.Type;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -7,6 +10,8 @@ import java.util.Scanner;
 import java.util.function.Predicate;
 
 import Metier.Client;
+import Metier.Composants;
+import Metier.Devis;
 import Metier.MainOeuvre;
 import Metier.Material;
 import Metier.Project;
@@ -15,6 +20,7 @@ import Service.ClientService;
 import Service.ComposantsService;
 import Service.DevisService;
 import Service.ProjectService;
+import Util.DateUtils;
 import Util.InputValidator;
 import Util.enums.EtatProjet;
 import Util.enums.TypeMainOeuvre;
@@ -44,11 +50,10 @@ public class ConsoleUI {
             System.out.println("1. Gérer les projets");
             System.out.println("2. Gérer les clients");
             System.out.println("3. Gérer les devis");
-            System.out.println("4. Gérer les composants");
-            System.out.println("5. Quitter");
+            System.out.println("4. Quitter");
 
             String input = scanner.nextLine();
-            if (InputValidator.isValidChoice(input, 1, 5)) {
+            if (InputValidator.isValidChoice(input, 1, 4)) {
                 int choice = Integer.parseInt(input);
                 switch (choice) {
                     case 1:
@@ -61,9 +66,6 @@ public class ConsoleUI {
                         manageDevis();
                         break;
                     case 4:
-                        manageComposants();
-                        break;
-                    case 5:
                         System.out.println("Au revoir!");
                         return;
                     default:
@@ -79,14 +81,12 @@ public class ConsoleUI {
             System.out.println("\n=== Gestion des Projets ===");
             System.out.println("1. Ajouter un nouveau projet");
             System.out.println("2. Afficher les informations des projets");
-            System.out.println("3. Modifier un projet existant");
-            System.out.println("4. Supprimer un projet");
             System.out.println("0. Retour au menu principal");
             System.out.println("===============================");
             System.out.print("Votre choix : ");
 
             String input = scanner.nextLine();
-            if (InputValidator.isValidChoice(input, 0, 4)) {
+            if (InputValidator.isValidChoice(input, 0, 2)) {
                 int choice = Integer.parseInt(input);
                 switch (choice) {
                     case 0:
@@ -97,12 +97,7 @@ public class ConsoleUI {
                     case 2:
                         displayProjectInfo();
                         break;
-                    case 3:
-                        updateProject();
-                        break;
-                    case 4:
-                        deleteProject();
-                        break;
+                  
                     default:
                         System.out.println("Choix invalide, veuillez réessayer.");
                 }
@@ -119,7 +114,6 @@ public class ConsoleUI {
             String nom = getValidInput("Nom du projet", InputValidator::isValidName);
             int surface = Integer.parseInt(getValidInput("Surface de la cuisine (en m²)", InputValidator::isValidSurface));
             
-            Project project = new Project(nom, surface, 0, 0, EtatProjet.EN_COURS, client);
             HashMap<String, Material> materials = new HashMap<>();
             HashMap<String, MainOeuvre> mainOeuvres = new HashMap<>();
 
@@ -135,10 +129,11 @@ public class ConsoleUI {
                 }
             }
             while (true) {
-                System.out.println("Voulez-vous ajouter main d'oeuvre ? (oui/non)");
+                System.out.println("--- Ajout de la main-d'œuvre ---");
                 MainOeuvre mainOeuvre = createMainOeuvre();
                 // creat hashmap list of mainOeuvre
                 mainOeuvres.put(mainOeuvre.getNom(), mainOeuvre);
+                System.out.println("Voulez-vous ajouter un autre  main-d'œuvre? (oui/non)");
                 if (!scanner.nextLine().toLowerCase().equals("oui")) {
                     break;
                 }
@@ -158,33 +153,60 @@ public class ConsoleUI {
             
             Double coutTotal = projectService.calculCoutTotal(coutMainOeuvre,coutMaterial,margeBeneficiaire);
             // Calculate coutTotal here
-            Project pro = new Project(nom, surface, margeBeneficiaire, coutTotal, EtatProjet.EN_COURS, client);
-            Project addedProject = projectService.addProject(pro);
-
+            Project project = new Project(nom, surface, margeBeneficiaire, coutTotal, EtatProjet.EN_COURS, client);
+            Project addedProject = projectService.addProject(project);
             // Add materials to the project
-            // for (Material material : materials.values()) {
-            //     addedProject.addMaterial(material);
-            //     material.setProjectAssocie(addedProject);
-            // }
+            for (Material material : materials.values()) {
+                material.setProjectAssocie(addedProject);
+                composantsService.addComposant(material);
+                
+            }
 
-            // // Add main d'oeuvre to the project
-            // for (MainOeuvre mainOeuvre : mainOeuvres.values()) {
-            //     addedProject.addMainOeuvre(mainOeuvre);
-            //     mainOeuvre.setProjectAssocie(addedProject);
-            // }
-
-            // Update the project in the database
-            projectService.updateProject(addedProject);
+            // Add main d'oeuvre to the project
+            for (MainOeuvre mainOeuvre : mainOeuvres.values()) {
+                mainOeuvre.setProjectAssocie(addedProject);
+                composantsService.addComposant(mainOeuvre); // Add main d'oeuvre to the service
+            }
 
             if (addedProject != null) {
                 System.out.println("Projet ajouté avec succès :");
                 projectService.afficherProject(addedProject);
+                createDevis(addedProject);
             } else {
                 System.out.println("Échec de l'ajout du projet.");
             }
         } else {
             System.out.println("Échec de la création du projet. Client non valide.");
         }
+    }
+    private void createDevis(Project project) {
+        System.out.println("--- Enregistrement du Devis pour " + project.getNomProjet() + " ---");
+        double montantEstime = project.getCoutTotal();
+        
+            String dateEmissionStr = getValidInput("Entrez la date d'émission du devis (format : jj/mm/aaaa)",InputValidator::isValidDate);
+            String dateValiditeStr = getValidInput("Entrez la date de validité du devis (format : jj/mm/aaaa)",InputValidator::isValidDate);
+
+            Date dateEmission = DateUtils.parseDDMMYYYY(dateEmissionStr);
+            Date dateValidite = DateUtils.parseDDMMYYYY(dateValiditeStr);        
+            Devis devis = new Devis(montantEstime, dateEmission, dateValidite, false, project);
+            String input = getValidInput("Souhaitez-vous enregistrer le devis ? (1 pour oui/2 pour non) : ", 
+                choice -> InputValidator.isValidChoice(choice, 1, 2));
+            if (input.equals("1")) {
+                try {
+                    Devis savedDevis = devisService.addDevis(devis);
+                    if (savedDevis != null) {
+                        System.out.println("Devis enregistré avec succès.");
+                        devisService.afficherDevis(savedDevis);
+                    } else {
+                        System.out.println("Erreur lors de l'enregistrement du devis.");
+                    }
+                } catch (Exception e) {
+                    System.out.println("Une erreur est survenue lors de l'enregistrement du devis : " + e.getMessage());
+                }
+            } else {
+                System.out.println("Devis non enregistré.");
+            }
+     
     }
 
     private Client selectClient() {
@@ -238,8 +260,7 @@ public class ConsoleUI {
         double nbHeures = Double.parseDouble(getValidInput("Nombre d'heures", InputValidator::isValidDouble));
         double tauxTVA = Double.parseDouble(getValidInput("Taux de TVA (%)", InputValidator::isValidTauxTVA));
         double productiviteOuvrier = Double.parseDouble(getValidInput("Productivité de l'ouvrier entre 1 et 1.5", InputValidator::isValidDoubleProductivité));
-        // respect this construct public MainOeuvre(String nom, Double TauxTVA, Double tauxHoraire, Double heuresTravail, Double productiviteOuvrier  ) 
-        return new MainOeuvre(nomMainOeuvre, tauxTVA, tauxHoraire, nbHeures,    productiviteOuvrier, null);
+        return new MainOeuvre(nomMainOeuvre, tauxTVA, tauxHoraire, nbHeures, productiviteOuvrier,type,null);
 
     }
 
@@ -284,37 +305,28 @@ public class ConsoleUI {
     private void listProjects() {
         List<Project> projects = projectService.getAllProjects();
         if (!projects.isEmpty()) {
-            // projects.forEach(project -> projectService.afficherProject(project));
+            projects.forEach(project -> projectService.afficherProject(project));
         } else {
             System.out.println("Aucun projet trouvé.");
         }
     }
 
-    private void searchProjectByName() {
+    private boolean searchProjectByName() {
         System.out.println("Entrez le nom du projet à rechercher :");
         String name = scanner.nextLine();
         List<Project> foundProjects = projectService.getProjectsByName(name);
         if (!foundProjects.isEmpty()) {
-            // foundProjects.forEach(project -> projectService.afficherProject(project));
+            foundProjects.forEach(project -> projectService.afficherProject(project));
+            return true;
         } else {
             System.out.println("Aucun projet trouvé avec ce nom : " + name);
+            return false;
         }
     }
 
-    private void updateProject() {
-        System.out.println("Entrez l'ID du projet à modifier :");
-    }
+  
 
-    private void deleteProject() {
-        System.out.println("Entrer l'id du projet à supprimer :");
-        String input = scanner.nextLine();
-        if (InputValidator.isValidChoice(input, 1, Integer.MAX_VALUE)) {
-            int id = Integer.parseInt(input);
-            projectService.deleteProject(id);
-            System.out.println("Projet supprimé avec succès.");
-        }
-    }
-
+ 
     private void manageClients() {
         while (true) {
             System.out.println("\n=== Gestion des Clients ===");
@@ -496,16 +508,60 @@ public class ConsoleUI {
    
    
     private void manageDevis() {
-        // Placeholder for devis management functionality
-        System.out.println("Gestion des devis...");
-        // Implement devis management methods here
+        System.out.println("=== Gestion des Devis ===");
+        System.out.println("1. trouver un devis par nom de projet");
+        System.out.println("0. Retour au menu principal");
+        System.out.println("===============================");
+        System.out.print("Votre choix : ");
+
+        String input = scanner.nextLine();
+        if (InputValidator.isValidChoice(input, 0, 2)) {
+            int choice = Integer.parseInt(input);
+            switch (choice) {
+                case 0:
+                    return;
+                case 1:
+                    searchDevisByProjectName();
+                    break;
+                default:
+                    System.out.println("Choix invalide, veuillez réessayer.");
+            }
+        } else {
+            System.out.println("Choix invalide, veuillez réessayer.");
+        }
     }
-    private void manageComposants() {
-        // Placeholder for composants management functionality
-        System.out.println("Gestion des composants...");
-        // Implement composants management methods here
+    private void searchDevisByProjectName() {
+        boolean found = searchProjectByName();
+        if (found) {
+            System.out.println("Entrez l'id du devis :");
+            int id = Integer.parseInt(scanner.nextLine());
+
+        Devis  devis = devisService.getDevisByProjectid(id);
+        devisService.afficherDevis(devis);
+        System.out.println("voulez-vous accepter le devis ? (1 pour oui/2 pour non)");
+        String input = scanner.nextLine();
+        if (InputValidator.isValidChoice(input, 1, 2)) {
+            int choice = Integer.parseInt(input);
+            Project project = devis.getProjetAssocie();
+            if (choice == 1) {
+                devis.setAccepte(true);
+                devisService.updateDevis(devis);
+                System.out.println("Devis accepté avec succès.");
+                project.setEtatProjet(EtatProjet.TERMINE);
+                projectService.updateProject(project);
+            } else {
+                project.setEtatProjet(EtatProjet.ANNULE); // Change ANNULER to ANNULE
+                projectService.updateProject(project);
+                System.out.println("Devis non accepté.");
+            }
+        }
+        }
+
+        
     }
 
+
+  
    
 
     public static void main(String[] args) {

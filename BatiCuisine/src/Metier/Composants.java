@@ -29,4 +29,10 @@ public abstract class Composants {
     public void setTauxTVA(Double tauxTVA) {
         TauxTVA = tauxTVA;
     }
+    public Project getProjectAssocie() {
+        return projectAssocie;
+    }
+    public void setProjectAssocie(Project projectAssocie) {
+        this.projectAssocie = projectAssocie;
+    }
 }

@@ -11,17 +11,19 @@ public class MainOeuvre extends Composants {
     protected TypeMainOeuvre typeMainOeuvre;
   
 
-    public MainOeuvre(String nom, Double TauxTVA, Double tauxHoraire, Double heuresTravail, Double productiviteOuvrier, Project projectAssocie) {
+    public MainOeuvre(String nom, Double TauxTVA, Double tauxHoraire, Double heuresTravail, Double productiviteOuvrier, TypeMainOeuvre typeMainOeuvre, Project projectAssocie) {
         super(nom, "MainOeuvre", TauxTVA, projectAssocie);
         this.tauxHoraire = tauxHoraire;
         this.heuresTravail = heuresTravail;
         this.productiviteOuvrier = productiviteOuvrier;
+        this.typeMainOeuvre = typeMainOeuvre;
     }
-    public MainOeuvre(String nom, Double TauxTVA, Double tauxHoraire, Double heuresTravail, Double productiviteOuvrier  ) {
+    public MainOeuvre(String nom, Double TauxTVA, Double tauxHoraire, Double heuresTravail, Double productiviteOuvrier, TypeMainOeuvre typeMainOeuvre) {
 		super(nom, "MainOeuvre", TauxTVA, null);
 		this.tauxHoraire = tauxHoraire;
         this.heuresTravail = heuresTravail;
         this.productiviteOuvrier = productiviteOuvrier;
+        this.typeMainOeuvre = typeMainOeuvre;
     }
 	
 

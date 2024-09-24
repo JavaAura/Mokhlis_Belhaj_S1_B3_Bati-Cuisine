@@ -1,9 +1,7 @@
 package Service;
 
 import Metier.Devis;
-import Metier.Project;
 import Repository.DevisRepository;
-import Util.DateUtils;
 
 public class DevisService {
     private final DevisRepository devisRepository;
@@ -12,13 +10,25 @@ public class DevisService {
         this.devisRepository = new DevisRepository();
     }
 
-    public Devis creerDevis(Project projet, String dateEmission, String dateValidite) {
-        Devis devis = new Devis();
-        devis.setMontantEstime(projet.getCoutTotal());
-        devis.setDateEmission(DateUtils.stringToDate(dateEmission));
-        devis.setDateValidite(DateUtils.stringToDate(dateValidite));
-        devis.setAccepte(false);
-        devis.setProjetAssocie(projet);
-        return devisRepository.save(devis);
+    public Devis addDevis(Devis devis) {
+        return devisRepository.addDevis(devis);
+    }
+    public Devis afficherDevis(Devis devis){
+        System.out.println(devis.getMontantEstime());
+        System.out.println(devis.getDateEmission());
+        System.out.println(devis.getDateValidite());
+        if (devis.isAccepte()){
+            System.out.println("le devis est accepté");
+        }else{
+            System.out.println("le devis n'est pas accepté");
+        }
+        
+        return devis;
+    }
+    public Devis getDevisByProjectid(int id){
+        return devisRepository.getDevisByProjectId(id);
+    }
+    public void updateDevis(Devis devis){
+        devisRepository.updateDevis(devis);
     }
 }

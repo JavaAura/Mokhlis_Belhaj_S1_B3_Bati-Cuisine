@@ -1,5 +1,6 @@
 package Util;
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,8 +103,37 @@ public static boolean isValidMarge(String margeBeneficiaire) {
         return false;
     }
 }
-
-
-
+public static boolean isValidDate(String date) {
+    if (date == null || date.trim().isEmpty()) {
+        logger.error("La date ne peut pas être vide.");
+        return false;
+    }
+    
+    String datePattern = "^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/\\d{4}$";
+    if (!date.matches(datePattern)) {
+        logger.error("Format de date invalide. Utilisez le format dd/MM/yyyy.");
+        return false;
+    }
+    
+    // Additional check for valid day-month combinations
+    String[] parts = date.split("/");
+    int day = Integer.parseInt(parts[0]);
+    int month = Integer.parseInt(parts[1]);
+    int year = Integer.parseInt(parts[2]);
+    
+    if (month == 2) {
+        // Check for February
+        boolean isLeapYear = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+        if (day > 29 || (day == 29 && !isLeapYear)) {
+            logger.error("Date invalide pour février.");
+            return false;
+        }
+    } else if ((month == 4 || month == 6 || month == 9 || month == 11) && day > 30) {
+        logger.error("Date invalide pour le mois spécifié.");
+        return false;
+    }
+    
+    return true;
+}
 
 }

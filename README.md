@@ -1,46 +1,118 @@
-# Mokhlis_Belhaj_S1_B3_Bati-Cuisine
+# BatiCuisine
 
-```
+BatiCuisine est une application Java de gestion de projets de construction et de rénovation de cuisines. Elle permet aux professionnels de gérer les clients, les projets, les devis et les composants.
 
-```BatiCuisine/
+## Structure du Projet
+
+```bash
+BatiCuisine/
 ├── src/
-│           ├── Main.java                 # Application entry point
-│           ├── ui/
-│           │   └── ConsoleUI.java        # Console user interface
-│           ├── service/
-│           │   ├── ProjectService.java       # Service to manage projects
-│           │   ├── ClientService.java        # Service to manage clients
-│           │   ├── ComposantsService.java    # Service to manage Composants
-│           │   └── DevisService.java         # Service to manage Devis
-│           ├── metier/
-│           │   ├── Project.java          # Project entity
-│           │   ├── Client.java           # Client entity
-│           │   ├── Devis.java            # Devis entity
-│           │   ├── Composants.java       # Composants entity (abstract class)
-│           │   ├── Material.java         # Material entity (extends Composants)
-|           |   └── MainOeuvre.java       # MainOeuvre entity (extends Composants)
-│           ├── repository/
-│           │   ├── ClientRepository.java     # Repository for clients
-│           │   ├── ProjectRepository.java    # Repository for projects
-│           │   ├── DevisRepository.java      # Repository for Devis
-│           │   └── ComposantsRepository.java # Repository for Composants
-│           │   
-│           └── util/
-│               ├── DateUtils.java          # Date management utilities
-|               ├── databaseConnection.java # connection to the database
-|               └── enums/
-|                   └── EtatProjet.java     # enum for the state of the project(EN_COURS, TERMINE, ANNULE)
+│   ├── ui/
+│   │   └── ConsoleUI.java        # Interface utilisateur en ligne de commande
+│   ├── service/
+│   │   ├── ProjectService.java       # Gestion des projets
+│   │   ├── ClientService.java        # Gestion des clients
+│   │   ├── ComposantsService.java    # Gestion des composants
+│   │   └── DevisService.java         # Gestion des devis
+│   ├── metier/
+│   │   ├── Project.java          # Entité projet
+│   │   ├── Client.java           # Entité client
+│   │   ├── Devis.java            # Entité devis
+│   │   ├── Composants.java       # Classe abstraite pour les composants
+│   │   ├── Material.java         # Entité matériau (hérite de Composants)
+│   │   └── MainOeuvre.java       # Entité main d'œuvre (hérite de Composants)
+│   ├── repository/
+│   │   ├── ClientRepository.java     # Repository pour les clients
+│   │   ├── ProjectRepository.java    # Repository pour les projets
+│   │   ├── DevisRepository.java      # Repository pour les devis
+│   │   └── ComposantsRepository.java # Repository pour les composants
+│   └── util/
+│       ├── DateUtils.java            # Utilitaires pour la gestion des dates
+│       ├── DatabaseConnection.java   # Gestion des connexions à la base de données
+│       └── enums/
+│           ├── TypeMainOeuvre.java   # Enum pour le type de main-d'œuvre (basique, spécialisée)
+│           ├── UniteDeMesure.java    # Enum pour les unités de mesure (m2, m3, m, etc.)
+│           └── EtatProjet.java       # Enum pour l'état du projet (EN_COURS, TERMINE, ANNULE)
 ├── resources/
-│   ├── config.properties                 # Configuration file (including DB connection details)
-│   └── schema.sql                        # SQL script to create tables
+│   ├── config.properties             # Fichier de configuration (informations DB)
+│   └── schema.sql                    # Script SQL pour créer les tables
 ├── README.md
 └── .gitignore
-'''
-instalation
-config.properties file
-contenu of fill 
-```Config.properties
-db.url=jdbc:example
-db.user=exampleUser
-db.password=examplePassword
 ```
+
+## Prérequis
+
+- Java JDK 8 ou supérieur
+- PostgreSQL
+
+## Installation
+
+1. **Configurer la base de données PostgreSQL :**
+   - Créez une base de données appelée `baticuisine`.
+   - Utilisez le script SQL situé dans le fichier `resources/schema.sql` pour générer les tables nécessaires.
+
+2. **Configurer le fichier `config.properties` :**
+   Mettez à jour le fichier `resources/config.properties` avec vos informations de connexion à la base de données :
+
+   ```properties
+   db.url=jdbc:postgresql://localhost:5432/baticuisine
+   db.user=VotreUtilisateur
+   db.password=VotreMotDePasse
+   ````
+  
+
+3. **Configurer les bibliothèques et dépendances :**
+   Ajoutez manuellement les bibliothèques suivantes à votre classpath :
+   * **JDBC Driver pour PostgreSQL** : PostgreSQL JDBC Driver
+   * **SLF4J** : Utilisé pour la gestion des logs
+
+4. **Compiler et exécuter :**
+   * Importez le projet dans votre IDE (Eclipse, IntelliJ, etc.)
+   * Assurez-vous que les fichiers JAR (PostgreSQL JDBC Driver, SLF4J) sont bien ajoutés au classpath
+   * Compilez le projet
+   * Exécutez la classe `ConsoleUI` pour démarrer l'application via la ligne de commande
+
+## Composants Clés
+
+1. **DatabaseConnection** : Gère les connexions à la base de données en utilisant un modèle singleton pour garantir une seule instance.
+
+2. **Repositories** : Les classes du package `repository` gèrent l'accès aux données pour les entités suivantes :
+   * `ClientRepository`
+   * `ProjectRepository`
+   * `DevisRepository`
+   * `ComposantsRepository`
+
+3. **Services** : Les classes du package `service` contiennent la logique métier :
+   * `ProjectService`
+   * `ClientService`
+   * `ComposantsService`
+   * `DevisService`
+
+4. **Entités** : Les classes du package `metier` représentent les entités métier :
+   * `Project`
+   * `Client`
+   * `Devis`
+   * `Composants` (classe abstraite)
+   * `Material`
+   * `MainOeuvre`
+
+5. **Interface Utilisateur** : La classe `ConsoleUI` gère l'interface utilisateur en ligne de commande.
+
+## Démarrage
+
+1. **Configurer la base de données :**
+   * Exécutez le fichier SQL `resources/schema.sql` pour créer les tables.
+
+2. **Configurer l'application :**
+   * Mettez à jour le fichier `config.properties` avec vos identifiants PostgreSQL.
+
+3. **Exécution :**
+   * Exécutez la classe `ConsoleUI` pour lancer l'application depuis la ligne de commande.
+
+## Utilisation
+
+Après avoir configuré et lancé l'application, vous pouvez utiliser l'interface en ligne de commande pour :
+* Gérer les clients
+* Créer et gérer des projets
+* Établir des devis
+* Gérer les composants (matériaux et main d'œuvre)

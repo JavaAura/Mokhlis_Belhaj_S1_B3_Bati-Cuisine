@@ -1,35 +1,29 @@
 package Util;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DateUtils {
+    private static final Logger logger = LoggerFactory.getLogger(DateUtils.class);
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-    public static String formatDate(LocalDate date) {
-        return date.format(DATE_FORMATTER);
-    }
-
-    public static LocalDate parseDate(String dateString) {
+    /**
+     * Checks if the input string is in DD/MM/YYYY format and parses it to a Date object.
+     *
+     * @param dateString The date string to parse.
+     * @return A Date object if the string is valid, null otherwise.
+     */
+    public static Date parseDDMMYYYY(String dateString) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        dateFormat.setLenient(false);
         try {
-            return LocalDate.parse(dateString, DATE_FORMATTER);
-        } catch (DateTimeParseException e) {
-            System.err.println("Invalid date format. Please use 'yyyy-MM-dd'.");
+            return dateFormat.parse(dateString);
+        } catch (ParseException e) {
+            logger.error("Failed to parse date: {}. Expected format: DD/MM/YYYY", dateString, e);
             return null;
         }
     }
-
-    public static Date stringToDate(String dateString) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            return formatter.parse(dateString);
-        } catch (ParseException e) {
-            throw new IllegalArgumentException("Invalid date format. Use yyyy-MM-dd", e);
-        }
-    }
+  
 }
