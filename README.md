@@ -125,6 +125,8 @@ Après avoir configuré et lancé l'application, vous pouvez utiliser l'interfac
 ## Diagrammes UML
 ### Diagramme de classe
 ![dig-class-uml](https://github.com/JavaAura/Mokhlis_Belhaj_S1_B3_Bati-Cuisine/tree/main/BatiCuisine/Resources/dig-class-uml.png)
+### diagramme de cas d'utilisation
+![dig-use-case-uml](https://github.com/JavaAura/Mokhlis_Belhaj_S1_B3_Bati-Cuisine/tree/main/BatiCuisine/Resources/dig-use-case-uml.png)
 
 
 
