@@ -129,5 +129,8 @@ Après avoir configuré et lancé l'application, vous pouvez utiliser l'interfac
 ### Diagramme de cas d'utilisation
 ![dig-use-case-uml](https://github.com/JavaAura/Mokhlis_Belhaj_S1_B3_Bati-Cuisine/raw/main/BatiCuisine/Resources/dig-use-case-uml.png)
 
+### lien de jira 
+[BatiCuisine](https://belhajmokhlis.atlassian.net/jira/software/projects/BT/boards/35)
+
 
 
