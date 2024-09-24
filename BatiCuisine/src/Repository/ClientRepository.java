@@ -13,15 +13,28 @@ import org.slf4j.LoggerFactory;
 import Metier.Client;
 import Util.DatabaseConnection;
 
+/**
+ * Repository class for managing Client entities in the database.
+ */
 public class ClientRepository {
     private DatabaseConnection dbConnection;
     private static final Logger logger = LoggerFactory.getLogger(ClientRepository.class);
 
+    /**
+     * Constructor for ClientRepository.
+     * Initializes the database connection.
+     */
     public ClientRepository() {
             this.dbConnection = DatabaseConnection.getInstance();
     }
 
-    // Method to add a new client
+    /**
+     * Adds a new client to the database.
+     *
+     * @param client The Client object to be added.
+     * @return The Client object with updated ID after insertion.
+     * @throws RuntimeException if there's an error during the insertion.
+     */
     public Client addClient(Client client) {
         String sql = "INSERT INTO client (nom, adresse, telephone, est_professionnel) VALUES (?, ?, ?, ?)";
         try (Connection conn = dbConnection.getConnection();
@@ -50,6 +63,12 @@ public class ClientRepository {
         }
     }
     
+    /**
+     * Retrieves a list of clients whose names match the given search term.
+     *
+     * @param name The search term to match against client names.
+     * @return A List of Client objects matching the search term.
+     */
     public List<Client> getClientsByName(String name) {
         List<Client> clients = new ArrayList<>();
         String sql = "SELECT * FROM client WHERE nom LIKE ?";
@@ -73,7 +92,13 @@ public class ClientRepository {
         return clients;
     }
 
-    // Method to retrieve a client by ID
+    /**
+     * Retrieves a client by their ID.
+     *
+     * @param id The ID of the client to retrieve.
+     * @return The Client object if found.
+     * @throws SQLException if the client is not found or if there's a database error.
+     */
     public Client getClientById(int id) throws SQLException {
         String sql = "SELECT * FROM client WHERE id = ?";
         try (Connection conn = dbConnection.getConnection();
@@ -95,7 +120,11 @@ public class ClientRepository {
         }
     }
 
-    // Method to get all clients
+    /**
+     * Retrieves all clients from the database.
+     *
+     * @return A List of all Client objects in the database.
+     */
     public List<Client> getAllClients() {
         List<Client> clients = new ArrayList<>();
         String sql = "SELECT * FROM client";
@@ -117,6 +146,11 @@ public class ClientRepository {
         return clients;
     }
 
+    /**
+     * Updates an existing client in the database.
+     *
+     * @param client The Client object with updated information.
+     */
     public void updateClient(Client client) {
         String sql = "UPDATE client SET nom = ?, adresse = ?, telephone = ?, est_professionnel = ? WHERE id = ?";
         try (Connection conn = dbConnection.getConnection();
@@ -132,6 +166,11 @@ public class ClientRepository {
         }
     }
 
+    /**
+     * Deletes a client from the database by their ID.
+     *
+     * @param id The ID of the client to be deleted.
+     */
     public void deleteClient(int id) {
         String sql = "DELETE FROM client WHERE id = ?";
         try (Connection conn = dbConnection.getConnection();

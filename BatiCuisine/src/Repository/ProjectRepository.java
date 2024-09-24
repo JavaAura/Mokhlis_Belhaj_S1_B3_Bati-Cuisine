@@ -20,13 +20,27 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/**
+ * Repository class for managing Project entities in the database.
+ */
 public class ProjectRepository {
     private DatabaseConnection dbConnection;
     private static final Logger logger = LoggerFactory.getLogger(ProjectRepository.class);
+
+    /**
+     * Constructor for ProjectRepository.
+     * Initializes the database connection.
+     */
     public ProjectRepository() {
         this.dbConnection = DatabaseConnection.getInstance();
     }
 
+    /**
+     * Adds a new project to the database.
+     *
+     * @param project The Project object to be added.
+     * @return The Project object with its ID set after insertion.
+     */
     public Project addProject(Project project) {
         String sql = "INSERT INTO project (nom,surface, marge_beneficiaire, cout_total, etat_projet, client_id) VALUES (?, ?, ?, ?, ?,?)";
         
@@ -54,7 +68,12 @@ public class ProjectRepository {
         return project;
     }
 
-    // Method to retrieve a project by ID
+    /**
+     * Retrieves a project from the database by its ID.
+     *
+     * @param id The ID of the project to retrieve.
+     * @return The Project object if found, null otherwise.
+     */
     public Project getProjectById(int id) {
         Project project = null;
         String sql = "SELECT * FROM project WHERE id = ?";
@@ -88,6 +107,13 @@ public class ProjectRepository {
         }
         return project;
     }
+    
+    /**
+     * Retrieves projects from the database by name (partial match).
+     *
+     * @param name The name or part of the name to search for.
+     * @return A List of Project objects matching the search criteria.
+     */
     public List<Project> getProjectsByName(String name) {
         List<Project> projects = new ArrayList<>();
         String sql = "SELECT * FROM project WHERE nom LIKE ?";
@@ -125,7 +151,11 @@ public class ProjectRepository {
         
     
 
-    // Method to get all projects
+    /**
+     * Retrieves all projects from the database.
+     *
+     * @return A List of all Project objects in the database.
+     */
     public List<Project> getAllProjects() {
         List<Project> projects = new ArrayList<>();
         String sql = "SELECT * FROM project";
@@ -171,6 +201,11 @@ public class ProjectRepository {
         return projects;
     }
 
+    /**
+     * Updates the state of a project in the database.
+     *
+     * @param project The Project object with updated information.
+     */
     public void updateProject(Project project) {
         String sql = "UPDATE project SET  etat_projet = ? WHERE id = ?";
         

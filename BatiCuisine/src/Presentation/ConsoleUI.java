@@ -1,7 +1,6 @@
 package Presentation;
 
-import java.lang.reflect.Type;
-import java.text.ParseException;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +9,6 @@ import java.util.Scanner;
 import java.util.function.Predicate;
 
 import Metier.Client;
-import Metier.Composants;
 import Metier.Devis;
 import Metier.MainOeuvre;
 import Metier.Material;
@@ -25,9 +23,10 @@ import Util.InputValidator;
 import Util.enums.EtatProjet;
 import Util.enums.TypeMainOeuvre;
 
-
-
-
+/**
+ * Classe principale pour l'interface utilisateur en console de l'application Bati-Cuisine.
+ * Gère les interactions avec l'utilisateur pour les projets, clients et devis.
+ */
 public class ConsoleUI {
     private Scanner scanner;
     private ProjectService projectService;
@@ -35,6 +34,10 @@ public class ConsoleUI {
     private DevisService devisService;
     private ComposantsService composantsService;
 
+    /**
+     * Constructeur de la classe ConsoleUI.
+     * Initialise le scanner et les services nécessaires.
+     */
     public ConsoleUI() {
         scanner = new Scanner(System.in);
         projectService = new ProjectService();
@@ -43,6 +46,10 @@ public class ConsoleUI {
         composantsService = new ComposantsService();
     }
 
+    /**
+     * Démarre l'interface utilisateur en console.
+     * Affiche le menu principal et gère les choix de l'utilisateur.
+     */
     public void start() {
         while (true) {
             System.out.println("=== Bati-Cuisine Application ===");
@@ -76,6 +83,11 @@ public class ConsoleUI {
             }
         }
     }
+
+    /**
+     * Gère les opérations liées aux projets.
+     * Permet d'ajouter un nouveau projet ou d'afficher les informations des projets existants.
+     */
     private void manageProjects() {
         while (true) {
             System.out.println("\n=== Gestion des Projets ===");
@@ -106,6 +118,11 @@ public class ConsoleUI {
             }
         }
     }
+
+    /**
+     * Ajoute un nouveau projet avec ses matériaux et main d'œuvre associés.
+     * Crée également un devis pour le projet.
+     */
     private void addProject() {
         System.out.println("Ajouter un projet :");
         Client client = selectClient();
@@ -147,7 +164,7 @@ public class ConsoleUI {
             if (input.equals("1")) {
                 margeBeneficiaire = Double.parseDouble(getValidInput("Entrez le pourcentage de marge bénéficiaire (%) : ", InputValidator::isValidMarge));
             }
-            // 
+             
             double coutMaterial = composantsService.materialCalcul(materials);
             double coutMainOeuvre = composantsService.mainOeuvreCalcul(mainOeuvres);
             
@@ -179,6 +196,11 @@ public class ConsoleUI {
             System.out.println("Échec de la création du projet. Client non valide.");
         }
     }
+
+    /**
+     * Crée un devis pour un projet donné.
+     * @param project Le projet pour lequel créer le devis.
+     */
     private void createDevis(Project project) {
         System.out.println("--- Enregistrement du Devis pour " + project.getNomProjet() + " ---");
         double montantEstime = project.getCoutTotal();
@@ -209,6 +231,10 @@ public class ConsoleUI {
      
     }
 
+    /**
+     * Permet à l'utilisateur de sélectionner un client existant ou d'en créer un nouveau.
+     * @return Le client sélectionné ou nouvellement créé, ou null si l'opération a échoué.
+     */
     private Client selectClient() {
         System.out.println("Est-ce un nouveau client ou un client existant ? (1 pour nouveau, 2 pour existant)");
         String input = scanner.nextLine();
@@ -234,6 +260,10 @@ public class ConsoleUI {
         return null;
     }
 
+    /**
+     * Crée un nouveau matériau en demandant les détails à l'utilisateur.
+     * @return Le nouveau matériau créé.
+     */
     private Material createMaterial() {
         String nomMaterial = getValidInput("Nom du matériau", InputValidator::isValidName);
         UniteDeMesure unite = selectUniteDeMesure();
@@ -246,6 +276,10 @@ public class ConsoleUI {
 
         return new Material(nomMaterial, tauxTVA, coutUnitaire, quantite, coutTransport, coefficientQualite, unite, null);
     }
+    /**
+     * Crée une nouvelle main d'œuvre en demandant les détails à l'utilisateur.
+     * @return La nouvelle main d'œuvre créée.
+     */
     private MainOeuvre createMainOeuvre() {
         String nomMainOeuvre = getValidInput("Nom de la main d'oeuvre", InputValidator::isValidName);
         
@@ -264,6 +298,10 @@ public class ConsoleUI {
 
     }
 
+    /**
+     * Permet à l'utilisateur de sélectionner une unité de mesure pour un matériau.
+     * @return L'unité de mesure sélectionnée.
+     */
     private UniteDeMesure selectUniteDeMesure() {
         System.out.println("Choisissez l'unité du matériau :");
         UniteDeMesure[] unites = UniteDeMesure.values();
@@ -278,6 +316,9 @@ public class ConsoleUI {
         return UniteDeMesure.METRE;
     }
 
+    /**
+     * Affiche les options pour afficher les informations des projets.
+     */
     private void displayProjectInfo() {
         System.out.println("\n--- Afficher les informations des projets ---");
         System.out.println("1. Lister tous les projets");
@@ -302,6 +343,9 @@ public class ConsoleUI {
         }
     }
 
+    /**
+     * Liste tous les projets existants.
+     */
     private void listProjects() {
         List<Project> projects = projectService.getAllProjects();
         if (!projects.isEmpty()) {
@@ -311,6 +355,10 @@ public class ConsoleUI {
         }
     }
 
+    /**
+     * Recherche un projet par son nom.
+     * @return true si au moins un projet a été trouvé, false sinon.
+     */
     private boolean searchProjectByName() {
         System.out.println("Entrez le nom du projet à rechercher :");
         String name = scanner.nextLine();
@@ -327,6 +375,10 @@ public class ConsoleUI {
   
 
  
+    /**
+     * Gère les opérations liées aux clients.
+     * Permet d'ajouter, afficher, modifier ou supprimer des clients.
+     */
     private void manageClients() {
         while (true) {
             System.out.println("\n=== Gestion des Clients ===");
@@ -364,6 +416,10 @@ public class ConsoleUI {
             }
         }
     }
+
+    /**
+     * Affiche les options pour afficher les informations des clients.
+     */
     private void displayClientInfo() {
         System.out.println("\n--- Afficher les informations clients ---");
         System.out.println("1. Lister tous les clients");
@@ -387,6 +443,11 @@ public class ConsoleUI {
             System.out.println("Choix invalide, veuillez réessayer.");
         }
     }
+
+    /**
+     * Ajoute un nouveau client.
+     * @return Le client nouvellement créé.
+     */
     private Client addClient() {
         System.out.println("Ajouter un client :");
         
@@ -418,6 +479,13 @@ public class ConsoleUI {
         System.out.println("\u001B[32mClient ajouté avec succès.\u001B[0m");
         return sucess;
     }
+
+    /**
+     * Demande à l'utilisateur une entrée valide pour un champ donné.
+     * @param fieldName Le nom du champ à remplir.
+     * @param validator Le prédicat pour valider l'entrée.
+     * @return L'entrée valide de l'utilisateur.
+     */
     private String getValidInput(String fieldName, Predicate<String> validator) {
         String input;
         do {
@@ -429,6 +497,10 @@ public class ConsoleUI {
         } while (!validator.test(input));
         return input;
     }
+
+    /**
+     * Liste tous les clients existants.
+     */
     private void listClients() {
         List<Client> clients = clientService.getAllClients();
         if (!clients.isEmpty()) {
@@ -437,6 +509,10 @@ public class ConsoleUI {
             System.out.println("Aucun client trouvé.");
         }
     }
+
+    /**
+     * Supprime un client en demandant son ID à l'utilisateur.
+     */
     private void deleteClient() {
         System.out.println("Entrer l'id du client à supprimer :");
         String input = scanner.nextLine();
@@ -446,6 +522,11 @@ public class ConsoleUI {
         System.out.println("Client supprimé avec succès.");
         }
     }
+
+    /**
+     * Recherche des clients par leur nom.
+     * @return La liste des clients trouvés.
+     */
     private List<Client> searchClientByName() {
         System.out.println("Entrez le nom du client à rechercher :");
         String name = scanner.nextLine();
@@ -457,6 +538,10 @@ public class ConsoleUI {
         }
         return foundClients; // Return the list of found clients
     }
+
+    /**
+     * Met à jour les informations d'un client existant.
+     */
     private void updateClient() {
         System.out.println("Entrez l'ID du client à modifier :");
         String input = scanner.nextLine();
@@ -478,6 +563,13 @@ public class ConsoleUI {
             System.out.println("Client mis à jour avec succès.");
         }
     }
+
+    /**
+     * Met à jour un champ spécifique d'un client.
+     * @param fieldName Le nom du champ à mettre à jour.
+     * @param setter La méthode setter pour mettre à jour le champ.
+     * @param validator Le prédicat pour valider la nouvelle valeur.
+     */
     private void updateClientField(String fieldName, java.util.function.Consumer<String> setter, Predicate<String> validator) {
         while (true) {
             System.out.printf("Nouveau %s (laisser vide pour ne pas changer) :%n", fieldName);
@@ -492,6 +584,12 @@ public class ConsoleUI {
             }
         }
     }
+
+    /**
+     * Pose une question oui/non à l'utilisateur.
+     * @param question La question à poser.
+     * @return true si la réponse est oui, false si la réponse est non.
+     */
     private boolean askYesNoQuestion(String question) {
         while (true) {
             System.out.println(question);
@@ -505,8 +603,11 @@ public class ConsoleUI {
             }
         }
     }
-   
-   
+
+    /**
+     * Gère les opérations liées aux devis.
+     * Permet de rechercher un devis par le nom du projet associé.
+     */
     private void manageDevis() {
         System.out.println("=== Gestion des Devis ===");
         System.out.println("1. trouver un devis par nom de projet");
@@ -530,6 +631,10 @@ public class ConsoleUI {
             System.out.println("Choix invalide, veuillez réessayer.");
         }
     }
+
+    /**
+     * Recherche un devis par le nom du projet associé et permet de l'accepter ou le refuser.
+     */
     private void searchDevisByProjectName() {
         boolean found = searchProjectByName();
         if (found) {
@@ -560,10 +665,10 @@ public class ConsoleUI {
         
     }
 
-
-  
-   
-
+    /**
+     * Point d'entrée principal de l'application.
+     * @param args Arguments de la ligne de commande (non utilisés).
+     */
     public static void main(String[] args) {
         ConsoleUI consoleUI = new ConsoleUI();
         consoleUI.start();

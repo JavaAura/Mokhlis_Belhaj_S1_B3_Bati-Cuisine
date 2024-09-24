@@ -17,6 +17,7 @@ CREATE TABLE client (
 CREATE TABLE project (
     id SERIAL PRIMARY KEY,
     nom VARCHAR(100) NOT NULL,                  -- Project name
+    surface bigint NOT NULL,                    -- Project surface
     marge_beneficiaire NUMERIC(10, 2),          -- Profit margin for the project
     cout_total NUMERIC(12, 2),                  -- Total cost of the project
     etat_projet VARCHAR(50) CHECK (etat_projet IN ('EN_COURS', 'TERMINE', 'ANNULE')),  -- Project status

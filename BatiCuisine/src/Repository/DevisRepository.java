@@ -15,14 +15,29 @@ import java.sql.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Repository class for managing Devis (quote) entities in the database.
+ * This class handles CRUD operations for Devis objects.
+ */
 public class DevisRepository {
         private DatabaseConnection dbConnection;
     private static final Logger logger = LoggerFactory.getLogger(DevisRepository.class);
 
+    /**
+     * Constructs a new DevisRepository instance.
+     * Initializes the database connection.
+     */
     public DevisRepository() {
         this.dbConnection = DatabaseConnection.getInstance();
     }
     // Method to add a new devis
+    /**
+     * Adds a new Devis to the database.
+     *
+     * @param devis The Devis object to be added.
+     * @return The added Devis object with its generated ID, or null if the operation fails.
+     * @throws RuntimeException if there's an error during the database operation.
+     */
     public Devis addDevis(Devis devis) {
         String sql = "INSERT INTO devis (montant_estime, date_emission, date_validite, accepte, project_id) VALUES (?, ?, ?, ?, ?)";
         
@@ -52,6 +67,13 @@ public class DevisRepository {
     }
 
     // Method to retrieve a devis by ID
+    /**
+     * Retrieves a Devis from the database by its associated project ID.
+     *
+     * @param id The ID of the project associated with the Devis.
+     * @return The retrieved Devis object, or null if not found.
+     * @throws RuntimeException if there's an error during the database operation.
+     */
     public Devis getDevisByProjectId(int id) {
         String sql = "SELECT * FROM devis WHERE project_id = ?";
         try (Connection connection = dbConnection.getConnection();
@@ -86,6 +108,11 @@ public class DevisRepository {
     }
 
         
+    /**
+     * Updates the 'accepte' status of an existing Devis in the database.
+     *
+     * @param devis The Devis object with updated information.
+     */
     public void updateDevis(Devis devis) {
         String sql = "UPDATE devis SET  accepte = ? WHERE id = ?";
         

@@ -50,6 +50,12 @@ BatiCuisine/
 1. **Configurer la base de données PostgreSQL :**
    - Créez une base de données appelée `baticuisine`.
    - Utilisez le script SQL situé dans le fichier `resources/schema.sql` pour générer les tables nécessaires.
+   - mettre ajour la path de fichier config.properties dans le class DatabaseConnection
+   ```Java
+   Util.DatabaseConnection
+           try (FileInputStream input = new FileInputStream("path/to/config.properties")) 
+
+   ```
 
 2. **Configurer le fichier `config.properties` :**
    Mettez à jour le fichier `resources/config.properties` avec vos informations de connexion à la base de données :
@@ -112,7 +118,13 @@ BatiCuisine/
 ## Utilisation
 
 Après avoir configuré et lancé l'application, vous pouvez utiliser l'interface en ligne de commande pour :
+* Gérer les projets
 * Gérer les clients
-* Créer et gérer des projets
-* Établir des devis
-* Gérer les composants (matériaux et main d'œuvre)
+* Gérer les devis
+
+## Diagrammes UML
+### Diagramme de classe
+![dig-class-uml](https://github.com/JavaAura/Mokhlis_Belhaj_S1_B3_Bati-Cuisine/tree/main/BatiCuisine/Resources/dig-class-uml.png)
+
+
+
