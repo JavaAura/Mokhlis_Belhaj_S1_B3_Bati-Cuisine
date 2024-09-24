@@ -35,9 +35,12 @@ BatiCuisine/
 │           └── EtatProjet.java       # Enum pour l'état du projet (EN_COURS, TERMINE, ANNULE)
 ├── resources/
 │   ├── config.properties             # Fichier de configuration (informations DB)
+│   ├── dig-class-uml.png             # Diagramme de classe UML
+│   ├── dig-use-case-uml.png          # Diagramme de cas d'utilisation UML
 │   └── schema.sql                    # Script SQL pour créer les tables
-├── README.md
-└── .gitignore
+├── README.md                         # ce fichier present le projet 
+├── BatiCuisine.jar                   # le jar du projet 
+└── .gitignore                        # pour ignorer les fichiers 
 ```
 
 ## Prérequis
