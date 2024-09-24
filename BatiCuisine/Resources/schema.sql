@@ -39,6 +39,8 @@ CREATE TABLE composants (
     nom VARCHAR(100) NOT NULL,    -- Component name
     type_composant VARCHAR(50),   -- Type of component (e.g., material, labor)
     taux_tva DOUBLE PRECISION     -- VAT rate for the component
+    project_id INT,
+    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE  -- Link to the project
 );
 
 -- Table for storing material information
@@ -58,11 +60,4 @@ CREATE TABLE mainoeuvre (
     productivite_ouvrier DOUBLE PRECISION -- Worker productivity factor
 );
 
--- Junction table to link projects and components
-CREATE TABLE project_composants (
-    project_id INT,
-    composant_id INT,
-    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
-    FOREIGN KEY (composant_id) REFERENCES composants(id) ON DELETE CASCADE,
-    PRIMARY KEY (project_id, composant_id)
-);
+

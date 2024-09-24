@@ -1,7 +1,6 @@
 package Repository;
 
-import Metier.Client;
-import Util.DatabaseConnection;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import Metier.Client;
+import Util.DatabaseConnection;
 
 public class ClientRepository {
     private DatabaseConnection dbConnection;
@@ -20,21 +22,34 @@ public class ClientRepository {
     }
 
     // Method to add a new client
-    public void addClient(Client client) {
+    public Client addClient(Client client) {
         String sql = "INSERT INTO client (nom, adresse, telephone, est_professionnel) VALUES (?, ?, ?, ?)";
         try (Connection conn = dbConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, client.getNom());
             pstmt.setString(2, client.getAdresse());
             pstmt.setString(3, client.getTelephone());
             pstmt.setBoolean(4, client.isEstProfessionnel());
-            pstmt.executeUpdate();
+            int affectedRows = pstmt.executeUpdate();
+            
+            if (affectedRows == 0) {
+                throw new SQLException("Creating client failed, no rows affected.");
+            }
+            
+            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    client.setId(generatedKeys.getInt(1));
+                } else {
+                    throw new SQLException("Creating client failed, no ID obtained.");
+                }
+            }
+            return client;
         } catch (SQLException e) {
             logger.error("Error adding client", e);
+            throw new RuntimeException("Error adding client", e);
         }
     }
-
-
+    
     public List<Client> getClientsByName(String name) {
         List<Client> clients = new ArrayList<>();
         String sql = "SELECT * FROM client WHERE nom LIKE ?";

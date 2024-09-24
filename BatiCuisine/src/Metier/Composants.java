@@ -5,10 +5,11 @@ public abstract class Composants {
 	protected String typeComposant;
 	protected Double TauxTVA;
     protected Project projectAssocie;
-    public Composants(String nom, String typeComposant, Double TauxTVA) {
+    public Composants(String nom, String typeComposant, Double TauxTVA ,Project projectAssocie) {
         this.nom = nom;
         this.typeComposant = typeComposant;
         this.TauxTVA = TauxTVA;
+        this.projectAssocie = projectAssocie;
     }
     public String getNom() {
         return nom;

@@ -1,9 +1,11 @@
 package Service;
 
-import Metier.Client;
 import Repository.ClientRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import Metier.Client;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -19,8 +21,9 @@ public class ClientService {
         System.out.println("Numéro de téléphone : " + client.getTelephone());
         System.out.println("===============================");
     }
-    public void addClient(Client client) {
-        clientRepository.addClient(client);
+    public Client addClient(Client client) {
+        Client addedClient = clientRepository.addClient(client);
+        return addedClient;
     }
 
     public Client getClientById(int id) {

@@ -5,20 +5,22 @@ import Util.enums.EtatProjet;
 public class Project {
     private int id;
     private String nomProjet;
+    private int surface;
     private double margeBeneficiaire;
     private double coutTotal;
     private EtatProjet etatProjet;
-    private int clientId;
+    private Client client;
 
     // Constructors, getters, and setters
     public Project() {}
 
-    public Project(String nomProjet, double margeBeneficiaire, double coutTotal, EtatProjet etatProjet, int clientId) {
+    public Project(String nomProjet, int surface, double margeBeneficiaire, double coutTotal, EtatProjet etatProjet, Client client) {
         this.nomProjet = nomProjet;
+        this.surface = surface;
         this.margeBeneficiaire = margeBeneficiaire;
         this.coutTotal = coutTotal;
         this.etatProjet = etatProjet;
-        this.clientId = clientId;
+        this.client = client;
     }
 
 	public int getId() {
@@ -61,13 +63,19 @@ public class Project {
 		this.etatProjet = etatProjet;
 	}
 
-	public int getClientId() {
-		return clientId;
+	public Client getClient() {
+		return client;
 	}
 
-	public void setClientId(int clientId) {
-		this.clientId = clientId;
+	public void setClient(Client client) {
+		this.client = client;
 	}
 
-    
+	public int getSurface() {
+		return surface;
+	}
+
+	public void setSurface(int surface) {
+		this.surface = surface;
+	}
 }

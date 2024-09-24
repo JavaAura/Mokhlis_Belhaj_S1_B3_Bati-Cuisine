@@ -1,16 +1,26 @@
 package Presentation;
 
+import java.util.HashMap;
 import java.util.List;
+
 import java.util.Scanner;
 import java.util.function.Predicate;
-import java.util.function.Consumer;
 
 import Metier.Client;
+import Metier.MainOeuvre;
+import Metier.Material;
+import Metier.Project;
+import Util.enums.UniteDeMesure;
+import Service.ClientService;
+import Service.ComposantsService;
+import Service.DevisService;
 import Service.ProjectService;
 import Util.InputValidator;
-import Service.ClientService;
-import Service.DevisService;
-import Service.ComposantsService;
+import Util.enums.EtatProjet;
+import Util.enums.TypeMainOeuvre;
+
+
+
 
 public class ConsoleUI {
     private Scanner scanner;
@@ -64,13 +74,247 @@ public class ConsoleUI {
             }
         }
     }
-
     private void manageProjects() {
-        // Placeholder for project management functionality
-        System.out.println("Gestion des projets...");
-        // Implement project management methods here
+        while (true) {
+            System.out.println("\n=== Gestion des Projets ===");
+            System.out.println("1. Ajouter un nouveau projet");
+            System.out.println("2. Afficher les informations des projets");
+            System.out.println("3. Modifier un projet existant");
+            System.out.println("4. Supprimer un projet");
+            System.out.println("0. Retour au menu principal");
+            System.out.println("===============================");
+            System.out.print("Votre choix : ");
+
+            String input = scanner.nextLine();
+            if (InputValidator.isValidChoice(input, 0, 4)) {
+                int choice = Integer.parseInt(input);
+                switch (choice) {
+                    case 0:
+                        return;
+                    case 1:
+                        addProject();
+                        break;
+                    case 2:
+                        displayProjectInfo();
+                        break;
+                    case 3:
+                        updateProject();
+                        break;
+                    case 4:
+                        deleteProject();
+                        break;
+                    default:
+                        System.out.println("Choix invalide, veuillez réessayer.");
+                }
+            } else {
+                System.out.println("Choix invalide, veuillez réessayer.");
+            }
+        }
     }
-// gestion des client
+    private void addProject() {
+        System.out.println("Ajouter un projet :");
+        Client client = selectClient();
+        
+        if (client != null) {
+            String nom = getValidInput("Nom du projet", InputValidator::isValidName);
+            int surface = Integer.parseInt(getValidInput("Surface de la cuisine (en m²)", InputValidator::isValidSurface));
+            
+            Project project = new Project(nom, surface, 0, 0, EtatProjet.EN_COURS, client);
+            HashMap<String, Material> materials = new HashMap<>();
+            HashMap<String, MainOeuvre> mainOeuvres = new HashMap<>();
+
+            while (true) {
+                System.out.println("--- Ajout des matériaux ---");
+                Material material = createMaterial();
+                // creat hashmap list of material
+                materials.put(material.getNom(), material);
+                
+                System.out.println("Voulez-vous ajouter un autre matériau ? (oui/non)");
+                if (!scanner.nextLine().toLowerCase().equals("oui")) {
+                    break;
+                }
+            }
+            while (true) {
+                System.out.println("Voulez-vous ajouter main d'oeuvre ? (oui/non)");
+                MainOeuvre mainOeuvre = createMainOeuvre();
+                // creat hashmap list of mainOeuvre
+                mainOeuvres.put(mainOeuvre.getNom(), mainOeuvre);
+                if (!scanner.nextLine().toLowerCase().equals("oui")) {
+                    break;
+                }
+            }
+            // calcul du cout total du projet
+            System.out.println("====Calcul du cout total du projet=====");
+            String input = getValidInput("Souhaitez-vous appliquer une marge bénéficiaire au projet ? (1 pour oui et 2 pour non) : ", 
+                choice -> InputValidator.isValidChoice(choice, 1, 2));
+            
+            double margeBeneficiaire = 0;
+            if (input.equals("1")) {
+                margeBeneficiaire = Double.parseDouble(getValidInput("Entrez le pourcentage de marge bénéficiaire (%) : ", InputValidator::isValidMarge));
+            }
+            // 
+            double coutMaterial = composantsService.materialCalcul(materials);
+            double coutMainOeuvre = composantsService.mainOeuvreCalcul(mainOeuvres);
+            
+            Double coutTotal = projectService.calculCoutTotal(coutMainOeuvre,coutMaterial,margeBeneficiaire);
+            // Calculate coutTotal here
+            Project pro = new Project(nom, surface, margeBeneficiaire, coutTotal, EtatProjet.EN_COURS, client);
+            Project addedProject = projectService.addProject(pro);
+
+            // Add materials to the project
+            // for (Material material : materials.values()) {
+            //     addedProject.addMaterial(material);
+            //     material.setProjectAssocie(addedProject);
+            // }
+
+            // // Add main d'oeuvre to the project
+            // for (MainOeuvre mainOeuvre : mainOeuvres.values()) {
+            //     addedProject.addMainOeuvre(mainOeuvre);
+            //     mainOeuvre.setProjectAssocie(addedProject);
+            // }
+
+            // Update the project in the database
+            projectService.updateProject(addedProject);
+
+            if (addedProject != null) {
+                System.out.println("Projet ajouté avec succès :");
+                projectService.afficherProject(addedProject);
+            } else {
+                System.out.println("Échec de l'ajout du projet.");
+            }
+        } else {
+            System.out.println("Échec de la création du projet. Client non valide.");
+        }
+    }
+
+    private Client selectClient() {
+        System.out.println("Est-ce un nouveau client ou un client existant ? (1 pour nouveau, 2 pour existant)");
+        String input = scanner.nextLine();
+        if (InputValidator.isValidChoice(input, 1, 2)) {
+            int choice = Integer.parseInt(input);
+            switch (choice) {
+                case 1:
+                    return addClient();
+                case 2:
+                    List<Client> clients = searchClientByName();
+                    if (clients.size() == 1) {
+                        return clients.get(0);
+                    } else if (clients.size() > 1) {
+                        clients.forEach(item -> clientService.afficherClient(item));
+                        System.out.println("Choisissez le client par id :");
+                        String inputClient = scanner.nextLine();
+                        return clientService.getClientById(Integer.parseInt(inputClient));
+                    }
+                    break;
+            }
+        }
+        System.out.println("Choix invalide, veuillez réessayer.");
+        return null;
+    }
+
+    private Material createMaterial() {
+        String nomMaterial = getValidInput("Nom du matériau", InputValidator::isValidName);
+        UniteDeMesure unite = selectUniteDeMesure();
+        
+        Double quantite = Double.parseDouble(getValidInput("Quantité de ce matériau (" + unite.getSymbol() + ")", InputValidator::isValidDouble));
+        Double coutUnitaire = Double.parseDouble(getValidInput("Coût unitaire de ce matériau (€/" + unite.getSymbol() + ")", InputValidator::isValidDouble));
+        Double coutTransport = Double.parseDouble(getValidInput("Coût de transport de ce matériau (€)", InputValidator::isValidDouble));
+        Double coefficientQualite = Double.parseDouble(getValidInput("Coefficient de qualité entre 1 et 1.5", InputValidator::isValidDoubleProductivité));
+        Double tauxTVA = Double.parseDouble(getValidInput("Taux de TVA (%)", InputValidator::isValidTauxTVA));
+
+        return new Material(nomMaterial, tauxTVA, coutUnitaire, quantite, coutTransport, coefficientQualite, unite, null);
+    }
+    private MainOeuvre createMainOeuvre() {
+        String nomMainOeuvre = getValidInput("Nom de la main d'oeuvre", InputValidator::isValidName);
+        
+        System.out.println("Choisissez le type de main d'oeuvre :");
+        System.out.println("1. Base");
+        System.out.println("2. Spécialisé");
+        String typeInput = getValidInput("Entrez 1 pour Base ou 2 pour Spécialisé", 
+            input -> InputValidator.isValidChoice(input, 1, 2));
+        TypeMainOeuvre type = typeInput.equals("1") ? TypeMainOeuvre.base : TypeMainOeuvre.specialise;
+        
+        double tauxHoraire = Double.parseDouble(getValidInput("Taux horaire (€/h)", InputValidator::isValidDouble));
+        double nbHeures = Double.parseDouble(getValidInput("Nombre d'heures", InputValidator::isValidDouble));
+        double tauxTVA = Double.parseDouble(getValidInput("Taux de TVA (%)", InputValidator::isValidTauxTVA));
+        double productiviteOuvrier = Double.parseDouble(getValidInput("Productivité de l'ouvrier entre 1 et 1.5", InputValidator::isValidDoubleProductivité));
+        // respect this construct public MainOeuvre(String nom, Double TauxTVA, Double tauxHoraire, Double heuresTravail, Double productiviteOuvrier  ) 
+        return new MainOeuvre(nomMainOeuvre, tauxTVA, tauxHoraire, nbHeures,    productiviteOuvrier, null);
+
+    }
+
+    private UniteDeMesure selectUniteDeMesure() {
+        System.out.println("Choisissez l'unité du matériau :");
+        UniteDeMesure[] unites = UniteDeMesure.values();
+        for (int i = 0; i < unites.length; i++) {
+            System.out.println((i + 1) + ". " + unites[i]);
+        }
+        String input = scanner.nextLine();
+        if (InputValidator.isValidChoice(input, 1, unites.length)) {
+            return unites[Integer.parseInt(input) - 1];
+        }
+        System.out.println("Choix invalide, METRE sera utilisé par défaut.");
+        return UniteDeMesure.METRE;
+    }
+
+    private void displayProjectInfo() {
+        System.out.println("\n--- Afficher les informations des projets ---");
+        System.out.println("1. Lister tous les projets");
+        System.out.println("2. Rechercher un projet par nom");
+        System.out.print("Votre choix : ");
+
+        String input = scanner.nextLine();
+        if (InputValidator.isValidChoice(input, 1, 2)) {
+            int choice = Integer.parseInt(input);
+            switch (choice) {
+                case 1:
+                    listProjects();
+                    break;
+                case 2:
+                    searchProjectByName();
+                    break;
+                default:
+                    System.out.println("Choix invalide, veuillez réessayer.");
+            }
+        } else {
+            System.out.println("Choix invalide, veuillez réessayer.");
+        }
+    }
+
+    private void listProjects() {
+        List<Project> projects = projectService.getAllProjects();
+        if (!projects.isEmpty()) {
+            // projects.forEach(project -> projectService.afficherProject(project));
+        } else {
+            System.out.println("Aucun projet trouvé.");
+        }
+    }
+
+    private void searchProjectByName() {
+        System.out.println("Entrez le nom du projet à rechercher :");
+        String name = scanner.nextLine();
+        List<Project> foundProjects = projectService.getProjectsByName(name);
+        if (!foundProjects.isEmpty()) {
+            // foundProjects.forEach(project -> projectService.afficherProject(project));
+        } else {
+            System.out.println("Aucun projet trouvé avec ce nom : " + name);
+        }
+    }
+
+    private void updateProject() {
+        System.out.println("Entrez l'ID du projet à modifier :");
+    }
+
+    private void deleteProject() {
+        System.out.println("Entrer l'id du projet à supprimer :");
+        String input = scanner.nextLine();
+        if (InputValidator.isValidChoice(input, 1, Integer.MAX_VALUE)) {
+            int id = Integer.parseInt(input);
+            projectService.deleteProject(id);
+            System.out.println("Projet supprimé avec succès.");
+        }
+    }
+
     private void manageClients() {
         while (true) {
             System.out.println("\n=== Gestion des Clients ===");
@@ -131,7 +375,7 @@ public class ConsoleUI {
             System.out.println("Choix invalide, veuillez réessayer.");
         }
     }
-    private void addClient() {
+    private Client addClient() {
         System.out.println("Ajouter un client :");
         
         String nom = getValidInput("Nom", InputValidator::isValidName);
@@ -153,8 +397,14 @@ public class ConsoleUI {
         }
 
         Client client = new Client(nom, telephone, adresse, estProfessionnel);
-        clientService.addClient(client);
-        System.out.println("Client ajouté avec succès.");
+        Client sucess = clientService.addClient(client);
+
+        
+     
+        clientService.afficherClient(sucess);
+        
+        System.out.println("\u001B[32mClient ajouté avec succès.\u001B[0m");
+        return sucess;
     }
     private String getValidInput(String fieldName, Predicate<String> validator) {
         String input;
@@ -184,15 +434,16 @@ public class ConsoleUI {
         System.out.println("Client supprimé avec succès.");
         }
     }
-    private void searchClientByName() {
+    private List<Client> searchClientByName() {
         System.out.println("Entrez le nom du client à rechercher :");
         String name = scanner.nextLine();
         List<Client> foundClients = clientService.getClientsByName(name);
         if (!foundClients.isEmpty()) {
             foundClients.forEach(client -> clientService.afficherClient(client));
-        }else{
-            System.out.println("Aucun client trouvé avec ce nom:" + name + " ");
-        }    
+        } else {
+            System.out.println("Aucun client trouvé avec ce nom : " + name);
+        }
+        return foundClients; // Return the list of found clients
     }
     private void updateClient() {
         System.out.println("Entrez l'ID du client à modifier :");

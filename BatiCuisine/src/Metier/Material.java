@@ -1,9 +1,9 @@
 package Metier;
 
+import Util.enums.UniteDeMesure;
+
 public class Material extends Composants {
-	public enum UniteDeMesure {
-		METRE, METRE_CARRE, KILOGRAMME, LITRE, PIECE
-	}
+
 
 	private Double coutUnitaire;
 	private Double quantite;
@@ -11,8 +11,16 @@ public class Material extends Composants {
 	private Double coefficientQualite;
 	private UniteDeMesure unite;
 
-	public Material(String nom, String typeComposant, Double TauxTVA, Double coutUnitaire, Double quantite, Double coutTransport, Double coefficientQualite, UniteDeMesure unite) {
-		super(nom, typeComposant, TauxTVA);
+	public Material(String nom,  Double TauxTVA, Double coutUnitaire, Double quantite, Double coutTransport, Double coefficientQualite, UniteDeMesure unite, Project projectAssocie) {
+		super(nom, "Material", TauxTVA, projectAssocie);
+		this.coutUnitaire = coutUnitaire;
+		this.quantite = quantite;
+		this.coutTransport = coutTransport;
+		this.coefficientQualite = coefficientQualite;
+		this.unite = unite;
+	}
+	public Material(String nom,  Double TauxTVA, Double coutUnitaire, Double quantite, Double coutTransport, Double coefficientQualite, UniteDeMesure unite) {
+		super(nom, "Material", TauxTVA, null);
 		this.coutUnitaire = coutUnitaire;
 		this.quantite = quantite;
 		this.coutTransport = coutTransport;

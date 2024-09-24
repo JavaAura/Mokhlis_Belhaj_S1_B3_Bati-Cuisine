@@ -7,12 +7,17 @@ import java.util.List;
 
 public class ProjectRepository {
     // Method to add a new project
-    public void addProject(Project project) {
-        // Implementation to add project to database
+    public Project addProject(Project project) {
+        Project pro = new Project(); 
+    	return pro ;
     }
 
     // Method to retrieve a project by ID
     public Project getProjectById(int id) {
+        // Implementation to get project from database
+        return null; // Replace with actual project
+    }
+    public List<Project> getProjectsByName(String name){
         // Implementation to get project from database
         return null; // Replace with actual project
     }

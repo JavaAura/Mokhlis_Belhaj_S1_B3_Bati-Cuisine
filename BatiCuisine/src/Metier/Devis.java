@@ -1,25 +1,23 @@
 package Metier;
 
 import java.util.Date;
-import Metier.Project;
 public class Devis {
     private int id;
     private double montantEstime;
     private Date dateEmission;
     private Date dateValidite;
     private boolean accepte;
-    private int projectId;
     private Project projetAssocie;
 
     // Constructors, getters, and setters
     public Devis() {}
 
-    public Devis(double montantEstime, Date dateEmission, Date dateValidite, boolean accepte, int projectId) {
+    public Devis(double montantEstime, Date dateEmission, Date dateValidite, boolean accepte,Project projetAssocie) {
         this.montantEstime = montantEstime;
         this.dateEmission = dateEmission;
         this.dateValidite = dateValidite;
         this.accepte = accepte;
-        this.projectId = projectId;
+        this.projetAssocie = projetAssocie;
     }
 
 	public int getId() {
@@ -62,13 +60,8 @@ public class Devis {
 		this.accepte = accepte;
 	}
 
-	public int getProjectId() {
-		return projectId;
-	}
 
-	public void setProjectId(int projectId) {
-		this.projectId = projectId;
-	}
+
 
 	public void setProjetAssocie(Project projet) {
 		this.projetAssocie = projet;

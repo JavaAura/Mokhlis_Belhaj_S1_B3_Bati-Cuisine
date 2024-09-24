@@ -1,5 +1,7 @@
 package Metier;
 
+import Util.enums.TypeMainOeuvre;
+
 public class MainOeuvre extends Composants {
 
 	
@@ -7,17 +9,21 @@ public class MainOeuvre extends Composants {
     protected Double heuresTravail;
     protected Double productiviteOuvrier;
     protected TypeMainOeuvre typeMainOeuvre;
-    protected enum TypeMainOeuvre {
-        base,
-        specialise
-    }
+  
 
-    public MainOeuvre(String nom, String typeComposant, Double TauxTVA, Double tauxHoraire, Double heuresTravail, Double productiviteOuvrier) {
-        super(nom, typeComposant, TauxTVA);
+    public MainOeuvre(String nom, Double TauxTVA, Double tauxHoraire, Double heuresTravail, Double productiviteOuvrier, Project projectAssocie) {
+        super(nom, "MainOeuvre", TauxTVA, projectAssocie);
         this.tauxHoraire = tauxHoraire;
         this.heuresTravail = heuresTravail;
         this.productiviteOuvrier = productiviteOuvrier;
     }
+    public MainOeuvre(String nom, Double TauxTVA, Double tauxHoraire, Double heuresTravail, Double productiviteOuvrier  ) {
+		super(nom, "MainOeuvre", TauxTVA, null);
+		this.tauxHoraire = tauxHoraire;
+        this.heuresTravail = heuresTravail;
+        this.productiviteOuvrier = productiviteOuvrier;
+    }
+	
 
     
     public Double getTauxHoraire() {
